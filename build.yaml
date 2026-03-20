@@ -1,19 +1,29 @@
-name: Build APK
-on: [push, workflow_dispatch]
+name: Build Python Kivy APK
+
+on:
+  push:
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-virtualenv git zip unzip
+          pip install buildozer cython
+
+      - name: Build APK
+        run: |
+          cd .   # or your subfolder if Kivy files are in a folder
+          buildozer -v android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4   # ← updated from v3 to v4
         with:
-          command: buildozer android debug
-          buildozer_version: stable
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: package
-          path: ${{ steps.buildozer.outputs.filename }}
+          name: KivyApp-APK
+          path: bin/*.apk
