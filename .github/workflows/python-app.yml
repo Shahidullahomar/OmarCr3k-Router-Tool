@@ -1,6 +1,5 @@
-name: Build Python Kivy APK
+name: Build Kivy APK
 
-# Trigger on push to main branch
 on:
   push:
     branches: [ main ]
@@ -13,7 +12,7 @@ jobs:
       # 1. Checkout repo
       - uses: actions/checkout@v3
 
-      # 2. Install system dependencies
+      # 2. Install dependencies
       - name: Install dependencies
         run: |
           sudo apt update
@@ -23,12 +22,11 @@ jobs:
       # 3. Build APK
       - name: Build APK
         run: |
-          cd .   # if Kivy files are in repo root
           buildozer -v android debug
 
-      # 4. Upload APK artifact
+      # 4. Upload APK
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4   # ← must be v4
         with:
           name: KivyApp-APK
           path: bin/*.apk
